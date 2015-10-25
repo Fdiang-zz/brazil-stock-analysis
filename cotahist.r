@@ -30,3 +30,25 @@ for (cotahist in cotahist_list){
 # TIPREG "00" and "99" are header and trailer records. "01" is asset historical data (what we are interested in)
 # CODBDI "02" and "96" are the types of assets that we want to further analyze
 assets <- subset(assets_full, TIPREG == "01" & CODBDI %in% c("02","96"))
+
+assets$DATE <- as.Date(assets$DATE,"%Y%m%d")
+assets$NOMRES <- factor(assets$NOMRES) 
+assets <- transform(assets,
+                    PREABE = as.numeric(PREABE),
+                    PREMAX = as.numeric(PREMAX),
+                    PREMIN = as.numeric(PREMIN),
+                    PREMED = as.numeric(PREMED),
+                    PREULT = as.numeric(PREULT),
+                    PREOFC = as.numeric(PREOFC),
+                    PREOFV = as.numeric(PREOFV),
+                    TOTNEG = as.numeric(TOTNEG),
+                    QUATOT = as.numeric(QUATOT),
+                    VOLTOT = as.numeric(VOLTOT),
+                    PREEXE = as.numeric(PREEXE)
+)
+
+#Compute daily price variation of each asset
+assets$dayPL <- assets$PREULT - assets$PREABE
+assets$dayPL_pct <- (assets$dayPL / assets$PREABE)
+
+#write.table(assets[1:100,c("PREULT","PREABE","dayPL","dayPL_pct")], "C:/users/fabio.d.gianizella/desktop/sample_assets.txt",sep="\t")
